@@ -5,11 +5,11 @@ import glob
 import datetime
 from pathlib import Path
 
-path = Path("./test_files")
+path = Path("/mnt/int_hd/Download/")
 rar_command = "unrar x -r -y"
-films_folder = Path("./test_files/Film")
-series_folder = Path("./test_files/Serie")
-remote_films_folder = Path("/mnt/ext_hd/1-Film")
+films_folder = Path("/mnt/int_hd/Download/1-Film/")
+series_folder = Path("/mnt/int_hd/Download/2-Serie Tv/")
+remote_films_folder = Path("/mnt/ext_hd/1-Film/")
 remote_series_folder = Path("/mnt/ext_hd/2-Serie Tv")
 regex_file = Path("regex-list.txt")
 regex_list = []
@@ -87,4 +87,4 @@ if __name__ == "__main__":
             os.system('shutdown -s -f -t 0')
     if move_file:
         os.system(f"rsync -av --remove-source-files --progress '{films_folder}/' '{remote_films_folder}/'")
-        os.system(f"rsync -av --remove-source-files --progress '{films_folder}/' '{remote_series_folder}/'")
+        os.system(f"rsync -av --remove-source-files --progress '{series_folder}/' '{remote_series_folder}/'")
