@@ -19,7 +19,7 @@ rm_file = True
 
 def load_regex(regex_file_path):
     regex_file = open(regex_file_path, 'r')
-    pattern = "([a-zA-Z-]+)\s+\|\s+(.*)"
+    pattern = r"([a-zA-Z-]+)\s+\|\s+(.*)"
     loadregex = re.compile(pattern)
     for line in regex_file:
         m = loadregex.search(line)
@@ -27,7 +27,7 @@ def load_regex(regex_file_path):
     regex_file.close()
 
 def search_multipart(search_dir):
-    pattern = "part0?0?1(?!\d)"
+    pattern = r"part0?0?1(?!\d)"
     multiregex = re.compile(pattern)
     for file in os.scandir(search_dir):
         if file.is_file() and file.name.endswith(".rar") and multiregex.search(file.name) != None:
@@ -46,19 +46,14 @@ def search_category(file):
                 remove_multipart(ext_code, file)
             elif category == "serie-tv":
                 name, season = extract_name_season(file)
-                name = re.sub("\.", " ", name).rstrip()
+                name = re.sub(r"\.", " ", name).rstrip()
                 destination_path = Path(f"{series_folder}/{name}/Season {season}")
                 check_folder_exist(destination_path)
                 ext_code = extract_file(file, destination_path)
                 remove_multipart(ext_code, file)
 
 def extract_file(file, destination_path):
-    archive_path = file.path
-    archive_path = archive_path.translate(str.maketrans({"'": r"\'"}))
-    dest_path = str(destination_path)
-    dest_path = dest_path.translate(str.maketrans({"'": r"\'"," ": r"\ "}))
-    print (archive_path)
-    cmd = f"{rar_command} {archive_path} {dest_path}"
+    cmd = f"{rar_command} {escape_char(file.path)} {escape_char(destination_path)}"
     print (cmd)
     exitcode = os.system(cmd)
     return exitcode
@@ -82,6 +77,15 @@ def remove_multipart(ext_code, file):
         to_del = re.sub("part[0-9]+","part*", file.path)
         for fl in glob.glob(to_del):
             os.remove(fl)
+
+def escape_char(str):
+    translation = str.maketrans({"'":  r"\'",
+                                 "]":  r"\]",
+                                 " ": r"\ ",
+                                 "^":  r"\^",
+                                 "$":  r"\$",
+                                 "&":  r"\&"})
+    return str.translate(translation)
 
 if __name__ == "__main__":
     load_regex(regex_file)
