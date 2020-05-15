@@ -54,8 +54,13 @@ def search_category(file):
 
 def extract_file(file, destination_path):
     archive_path = file.path
-    print (file.path)
-    exitcode = os.system(f"{rar_command} '{archive_path}' '{destination_path}'")
+    archive_path = archive_path.translate(str.maketrans({"'": r"\'"}))
+    dest_path = str(destination_path)
+    dest_path = dest_path.translate(str.maketrans({"'": r"\'"," ": r"\ "}))
+    print (archive_path)
+    cmd = f"{rar_command} {archive_path} {dest_path}"
+    print (cmd)
+    exitcode = os.system(cmd)
     return exitcode
 
 def check_folder_exist(dir_path):
