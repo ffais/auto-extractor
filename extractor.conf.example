@@ -1,0 +1,13 @@
+[DEFAULT]
+RarCommand = unrar x -r -y
+RegexFile = regex-list.txt
+ShutdownAfterFinish = False
+MoveFileToRemote = True
+RemoveLocalFile = True
+
+[folder_settings]
+ScanDir = 
+FilmsFolder = 
+SeriesFolder = 
+RemoteFilmsFolder =
+RemoteSeriesFolder = 

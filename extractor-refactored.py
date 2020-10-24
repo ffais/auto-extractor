@@ -1,21 +1,39 @@
-import os
-import subprocess
-import re
-import glob
-import datetime
+#!/usr/bin/env python
+import os, sys, subprocess, re, glob, datetime, configparser
 from pathlib import Path
+from distutils.util import strtobool
 
-path = Path("/mnt/int_hd/Download/")
-rar_command = "unrar x -r -y"
-films_folder = Path("/mnt/int_hd/Download/1-Film/")
-series_folder = Path("/mnt/int_hd/Download/2-Serie Tv/")
-remote_films_folder = Path("/mnt/ext_hd/1-Film/")
-remote_series_folder = Path("/mnt/ext_hd/2-Serie Tv")
-regex_file = Path("regex-list.txt")
+path = ""
+rar_command = ""
+films_folder = ""
+series_folder = ""
+remote_films_folder = ""
+remote_series_folder = ""
+regex_file = ""
 regex_list = []
 shutdown = False
 move_file = True
 rm_file = True
+
+def parse_config(configs):
+    global path, rar_command, films_folder, remote_films_folder, remote_series_folder, regex_file
+    global shutdown, move_file, rm_file
+
+    config = configparser.ConfigParser()
+    config.read(configs)
+    print(config.sections())
+    path = Path(config['folder_settings']['ScanDir'])
+    print(path)
+    rar_command = config['DEFAULT']['RarCommand']
+    films_folder = Path(config['folder_settings']['FilmsFolder'])
+    series_folder = Path(config['folder_settings']['SeriesFolder'])
+    remote_films_folder = Path(config['folder_settings']['RemoteFilmsFolder'])
+    remote_series_folder = Path(config['folder_settings']['RemoteSeriesFolder'])
+    regex_file = Path(config['DEFAULT']['RegexFile'])
+    shutdown = strtobool(config['DEFAULT']['ShutdownAfterFinish'])
+    move_file = strtobool(config['DEFAULT']['MoveFileToRemote'])
+    rm_file = strtobool(config['DEFAULT']['RemoveLocalFile'])
+
 
 def load_regex(regex_file_path):
     regex_file = open(regex_file_path, 'r')
@@ -88,6 +106,11 @@ def escape_char(str):
     return str.translate(translation)
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        config_file = sys.argv[1]
+    else:
+        config_file = "extractor.conf"
+    parse_config(config_file)
     load_regex(regex_file)
     search_multipart(path)
     if shutdown:

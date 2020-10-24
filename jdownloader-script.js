@@ -1,0 +1,1 @@
+callAsync(function(exitCode,stdOut,errOut){ alert("Start extraction");},"extractor-refactored.py");
