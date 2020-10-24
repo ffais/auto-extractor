@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os, sys, subprocess, re, glob, datetime, configparser
 from pathlib import Path
 from distutils.util import strtobool
@@ -16,17 +16,18 @@ move_file = True
 rm_file = True
 
 def parse_config(configs):
-    global path, rar_command, films_folder, remote_films_folder, remote_series_folder, regex_file
+    global path, rar_command, series_folder, films_folder, remote_films_folder, remote_series_folder, regex_file
     global shutdown, move_file, rm_file
 
     config = configparser.ConfigParser()
     config.read(configs)
-    print(config.sections())
+    # print(config.sections())
     path = Path(config['folder_settings']['ScanDir'])
-    print(path)
+    # print(path)
     rar_command = config['DEFAULT']['RarCommand']
     films_folder = Path(config['folder_settings']['FilmsFolder'])
     series_folder = Path(config['folder_settings']['SeriesFolder'])
+    # print(series_folder)
     remote_films_folder = Path(config['folder_settings']['RemoteFilmsFolder'])
     remote_series_folder = Path(config['folder_settings']['RemoteSeriesFolder'])
     regex_file = Path(config['DEFAULT']['RegexFile'])
@@ -66,12 +67,14 @@ def search_category(file):
                 name, season = extract_name_season(file)
                 name = re.sub(r"\.", " ", name).rstrip()
                 destination_path = Path(f"{series_folder}/{name}/Season {season}")
+                print(series_folder)
+                print(destination_path)
                 check_folder_exist(destination_path)
                 ext_code = extract_file(file, destination_path)
                 remove_multipart(ext_code, file)
 
 def extract_file(file, destination_path):
-    cmd = f"{rar_command} {escape_char(file.path)} {escape_char(destination_path)}"
+    cmd = f"{rar_command} {escape_char(str(file.path))} {escape_char(str(destination_path))}"
     print (cmd)
     exitcode = os.system(cmd)
     return exitcode
@@ -109,7 +112,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         config_file = sys.argv[1]
     else:
-        config_file = "extractor.conf"
+        config_file = os.path.dirname(__file__) + "/extractor.conf"
+    print(config_file)
     parse_config(config_file)
     load_regex(regex_file)
     search_multipart(path)
