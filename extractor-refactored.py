@@ -120,7 +120,7 @@ if __name__ == "__main__":
     if shutdown:
         ora = datetime.datetime.now().hour
         if 0 <= ora <= 9 :
-            os.system('shutdown -s -f -t 0')
+            os.system('shutdown')
     if move_file:
         os.system(f"rsync -av --remove-source-files --progress '{films_folder}/' '{remote_films_folder}/'")
         os.system(f"rsync -av --remove-source-files --progress '{series_folder}/' '{remote_series_folder}/'")
